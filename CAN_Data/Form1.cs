@@ -54,54 +54,40 @@ namespace CAN_Data
 
         private double DecodeCurrentValue(TPCANMsg message)
         {
-            if (message.ID == 0x123) // CAB 500 센서 CAN ID - 매뉴얼에서 확인 바람
+            if (message.ID == 0x3C2) // CAB 500 센서 CAN ID
             {
-                int rawValue = (message.DATA[0] << 8) | message.DATA[1]; //첫 두 바이트 사용
-                return rawValue * 0.01; // 스케일링
+                try
+                {
+                    // CAN 데이터 상위 4바이트 추출
+                    byte[] currentBytes = message.DATA.Take(4).ToArray();
+
+                    // Big-Endian에서 Little-Endian으로 변환
+                    byte[] reversedData = currentBytes.Reverse().ToArray();
+
+                    // 부호 있는 32비트 정수로 변환
+                    int rawValue = BitConverter.ToInt32(reversedData, 0);
+
+                    // 오프셋 적용 (예: 기본값이 0x80000000 = -2147483648인 경우)
+                    int offset = unchecked((int)0x80000000); // 기본 오프셋
+                    rawValue = unchecked(rawValue - offset);
+
+                    // 스케일링: 0.1mA 단위 -> A로 변환
+                    double currentValue = rawValue * 0.001; // 0.1mA -> A로 변환
+                    Console.WriteLine("Raw Value: {0}, Offset Applied: {1}, Scaled Value: {2} A",
+                                      rawValue + offset, rawValue, currentValue);
+
+                    return currentValue;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error decoding current value: " + ex.Message);
+                    return 0.0;
+                }
             }
             return 0.0;
         }
 
-        /*private void UpdateCurrentValue(double currentValue)
-        {
-            //ListBox에 값 추가
-            Invoke(new System.Action(() =>
-            {
-                CurrentValue.Items.Add(currentValue.ToString("F2") + " A");
 
-                if(CurrentValue.Items.Count > 100) // 항목 개수 제한
-                {
-                    CurrentValue.Items.RemoveAt(0);
-                }
-            }));
-
-            Invoke(new System.Action(() =>
-            {
-                CurrentGraph1.PlotYAppend(currentValue);
-
-                // 스크롤을 마지막 항목으로 이동
-                CurrentValue.TopIndex = CurrentValue.Items.Count - 1;
-            }));
-        }
-
-        private void UpdateCANData(TPCANMsg message, int period)
-        {
-            string dataString = BitConverter.ToString(message.DATA, 0, message.LEN);
-            string displayText = "ID: " + message.ID.ToString("X") +", Len: " + message.LEN +
-                         ", Data: " + dataString +", Period: " + period + " ms";
-
-            Invoke(new System.Action(() =>
-            {
-                CanData.Items.Add(displayText);
-                if (CanData.Items.Count > 100)
-                {
-                    CanData.Items.RemoveAt(0);
-                }
-
-                // 스크롤을 마지막 항목으로 이동
-                CanData.TopIndex = CanData.Items.Count - 1;
-            }));
-        }*/
 
         private void UpdateCurrentValue(double currentValue)
         {
@@ -186,6 +172,7 @@ namespace CAN_Data
                     lastReceivedTime = DateTime.Now;
 
                     double currentValue = DecodeCurrentValue(message);
+                    
                     UpdateCurrentValue(currentValue);
                     UpdateCANData(message, period);
                 }
@@ -214,7 +201,5 @@ namespace CAN_Data
             }
             PCANBasic.Uninitialize(canHandle); // CAN 종료
         }
-
-
     }
 }
