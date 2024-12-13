@@ -58,6 +58,9 @@ namespace CAN_Data
             {
                 try
                 {
+                    // 큐를 비워 기존 메시지를 삭제
+                    PCANBasic.Reset(canHandle);
+
                     // CAN 데이터 상위 4바이트 추출
                     byte[] currentBytes = message.DATA.Take(4).ToArray();
 
@@ -156,11 +159,14 @@ namespace CAN_Data
             }
         }
 
-
         private void ReadCANData()
         {
             TPCANMsg message;
             TPCANTimestamp timestamp;
+
+            // 큐를 비워 기존 메시지를 삭제
+            //PCANBasic.Reset(canHandle);
+
             DateTime lastReceivedTime = DateTime.Now;
 
             while (isRunning)
