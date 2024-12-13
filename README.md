@@ -116,18 +116,18 @@ Raw Value: 2147483648, Offset Applied: 0, Scaled Value: 0.00 A
 ---
 
 ### 🖼️ UI 예시
-![UI Example](https://github.com/user-attachments/assets/2ce3394e-267b-4616-a5a0-5776c68e5c50)
+<img width = 700 src = "https://github.com/user-attachments/assets/2ce3394e-267b-4616-a5a0-5776c68e5c50">
 
 ---
 
 ### 🖼️ 센서 연결
-![CAB 500 Connection](https://github.com/user-attachments/assets/a386d56d-e5ce-4f6c-bafe-c252db7c2b61)
+<img width = 500 src = "https://github.com/user-attachments/assets/a386d56d-e5ce-4f6c-bafe-c252db7c2b61">
 
 ---
 
 
 ### 🖼️ PCAN USB 모듈
-![PCAN-USB Pro](https://github.com/user-attachments/assets/ceeaa16a-ec33-4bae-bfc7-e73a629d4ba5)
+<img width = 500 src = "https://github.com/user-attachments/assets/ceeaa16a-ec33-4bae-bfc7-e73a629d4ba5">
 
 ---
 
